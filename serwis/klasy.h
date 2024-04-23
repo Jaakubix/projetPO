@@ -11,6 +11,7 @@ class Osoba {
 public:
     string imie;
     string nazwisko;
+    Osoba(string Imie = "", string Nazwisko = "") : imie(Imie), nazwisko(Nazwisko) {}
     virtual ~Osoba() {
         cout << "Ta osoba juz nie jest w systemie" << endl;
     }
@@ -18,12 +19,16 @@ public:
 
 // Definicja klasy Klient
 class Klient : public Osoba {
-public:
+    friend void wyswietlInformacjeKlienta(const Klient& klient);
+    friend class SerwisKomputerowy;
+private:
     string numer_telefonu;
     string email;
-
+public:
+    Klient(string imie = "", string nazwisko = "", string tel = "", string mail = "") : Osoba(imie, nazwisko), numer_telefonu(tel), email(mail) {}
     void zglos_problem();
     void sprawdz_status();
+    void aktualizuj_dane(string nowy_numer_telefonu, string nowy_email);
     ~Klient() {
         cout << "Ten klient juz nie jest w systemie" << endl;
     }
@@ -31,12 +36,15 @@ public:
 
 // Definicja klasy PracownikSerwisu
 class PracownikSerwisu : public Osoba {
-public:
+    friend class SerwisKomputerowy;
+private:
     string specjalizacja;
     vector<int> zgloszenia;
-
+public:
+    PracownikSerwisu(string imie = "", string nazwisko = "", string spec = "") : Osoba(imie, nazwisko), specjalizacja(spec) {}
     void przyjmij_zgloszenie(int numerZgloszenia);
     void zakoncz_zgloszenie(int numerZgloszenia);
+    void aktualizuj_specjalizacje(string nowa_specjalizacja);
     ~PracownikSerwisu() {
         cout << "Ten pracownik juz nie pracuje" << endl;
     }
@@ -44,14 +52,17 @@ public:
 
 // Definicja klasy Urzadzenie
 class Urzadzenie {
-public:
+    friend class SerwisKomputerowy;
+    friend void zarejestrujUrzadzenie(const Urzadzenie& urzadzenie);
+private:
     string typ;
     string model;
     string numer_seryjny;
-    Klient* wlasciciel;
-
-    void zarejestruj_urzadzenie();
+public:
+    Urzadzenie(string Typ = "", string Model = "", string NumerSeryjny = "") : typ(Typ), model(Model), numer_seryjny(NumerSeryjny) {}
+    //void zarejestruj_urzadzenie();
     void aktualizuj_informacje();
+    void zaktualizuj_model(string nowy_model);
     ~Urzadzenie() {
         cout << "To urzadzenie juz nie istnieje" << endl;
     }
@@ -59,15 +70,16 @@ public:
 
 // Definicja klasy ZgloszenieSerwisowe
 class ZgloszenieSerwisowe {
-public:
+    friend class SerwisKomputerowy;
+    friend void aktualizujStatusZgloszenia(const ZgloszenieSerwisowe& zgloszenie);
+private:
     int numer_zgloszenia;
     string opis_problemu;
     string status;
-    Klient* klient;
-    Urzadzenie* urzadzenie;
-
-    void aktualizuj_status(std::string nowyStatus);
-    void przypisz_pracownika(PracownikSerwisu* pracownik);
+public:
+    ZgloszenieSerwisowe(int numer = 0, string opis = "", string Status = "") : numer_zgloszenia(numer), opis_problemu(opis), status(Status) {}
+    //void aktualizuj_status(string nowyStatus);
+    void dodaj_opis_problemu(string nowy_opis);
     ~ZgloszenieSerwisowe() {
         cout << "Tego zgloszenia juz nie ma" << endl;
     }
@@ -75,16 +87,15 @@ public:
 
 // Definicja klasy SerwisKomputerowy
 class SerwisKomputerowy {
-public:
+    friend void sprawdzStatusSerwisu(const SerwisKomputerowy& serwis);
+private:
     string nazwa;
     string adres;
     vector<PracownikSerwisu*> pracownicy;
     vector<ZgloszenieSerwisowe*> zgloszenia;
-    vector<Klient*> klienci;
-
+public:
+    SerwisKomputerowy(string Nazwa = "", string Adres = "") : nazwa(Nazwa), adres(Adres) {}
     void dodaj_klienta(Klient* klient);
-    void przyjmij_zgloszenie(ZgloszenieSerwisowe* zgloszenie);
-    void wydaj_urzadzenie(Urzadzenie* urzadzenie);
     ~SerwisKomputerowy() {
         cout << "Ten serwis komputerowy juz nie istnieje" << endl;
     }
@@ -92,14 +103,15 @@ public:
 
 // Definicja klasy CzescZamienna
 class CzescZamienna {
-public:
+    friend void zamowCzesc(const CzescZamienna& czesc);
+private:
     string nazwa;
     string model;
     string kompatybilnosc;
     double cena;
-
-    void zamow_czesc();
-    void sprawdz_dostepnosc();
+public:
+    CzescZamienna(string Nazwa = "", string Model = "", string Kompatybilnosc = "", double Cena = 0.0) : nazwa(Nazwa), model(Model), kompatybilnosc(Kompatybilnosc), cena(Cena) {}
+    //void zamow_czesc();
     ~CzescZamienna() {
         cout << "Tej czesci zamiennej juz nie ma" << endl;
     }
@@ -107,13 +119,13 @@ public:
 
 // Definicja klasy NarzedziaDiagnostyczne
 class NarzedziaDiagnostyczne {
-public:
+private:
     string nazwa;
     string typ;
     string wersja;
-
+public:
+    NarzedziaDiagnostyczne(string Nazwa = "", string Typ = "", string Wersja = "") : nazwa(Nazwa), typ(Typ), wersja(Wersja) {}
     void wykonaj_diagnostyke(Urzadzenie* urzadzenie);
-    void aktualizuj_oprogramowanie();
     ~NarzedziaDiagnostyczne() {
         cout << "Tego narzedzia diagnistycznego juz nie ma" << endl;
     }
@@ -125,7 +137,7 @@ public:
     ZgloszenieSerwisowe* zgloszenie;
     string wyniki_diagnostyki;
     string rekomendacje;
-
+    RaportSerwisowy(ZgloszenieSerwisowe* Zgloszenie = nullptr, string Diagnostyka = "", string Rekomendacje = "") : zgloszenie(Zgloszenie), wyniki_diagnostyki(Diagnostyka), rekomendacje(Rekomendacje) {}
     void utworz_raport();
     void aktualizuj_raport();
     ~RaportSerwisowy() {
@@ -138,7 +150,7 @@ class HistoriaSerwisowa {
 public:
     Urzadzenie* urzadzenie;
     vector<ZgloszenieSerwisowe*> historia_zgloszen;
-
+    HistoriaSerwisowa(Urzadzenie* Urzadzenie = nullptr) : urzadzenie(Urzadzenie) {}
     void dodaj_wpis(ZgloszenieSerwisowe* zgloszenie);
     void pobierz_historie();
     ~HistoriaSerwisowa() {
@@ -153,7 +165,7 @@ public:
     vector<PracownikSerwisu*> pracownicy;
     vector<NarzedziaDiagnostyczne*> narzedzia;
     vector<CzescZamienna*> czesci_zamienne;
-
+    SystemZarzadzania() {}
     void przydziel_zgloszenie(ZgloszenieSerwisowe* zgloszenie);
     void zaktualizuj_inwentarz();
     ~SystemZarzadzania() {

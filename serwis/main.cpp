@@ -4,48 +4,39 @@
 using namespace std;
 
 int main() {
-    SerwisKomputerowy serwis;
-    serwis.nazwa = "Naprawa Komputerów 24h";
-    serwis.adres = "ul. Techniczna 10, Warszawa";
+    
+    // Creating instances of each class
+    Klient klient1("Jan", "Kowalski");
+    klient1.aktualizuj_dane("123456789", "jan@example.com");
 
-    Klient klient1;
-    klient1.imie = "Jan";
-    klient1.nazwisko = "Kowalski";
-    klient1.numer_telefonu = "500600700";
-    klient1.email = "jan.kowalski@example.com";
+    PracownikSerwisu pracownik1("Adam", "Nowak");
+    pracownik1.przyjmij_zgloszenie(101);
+    pracownik1.zakoncz_zgloszenie(101);
 
-    serwis.dodaj_klienta(&klient1);
-
-    Urzadzenie laptopKlienta1;
-    laptopKlienta1.typ = "Laptop";
-    laptopKlienta1.model = "Dell XPS 15";
-    laptopKlienta1.numer_seryjny = "123456789";
-    laptopKlienta1.wlasciciel = &klient1;
-
-    laptopKlienta1.zarejestruj_urzadzenie();
+    Urzadzenie urzadzenie1("Printer Model X");
+    urzadzenie1.aktualizuj_informacje();
+    urzadzenie1.zaktualizuj_model("Printer Model X Plus");
 
     ZgloszenieSerwisowe zgloszenie1;
-    zgloszenie1.numer_zgloszenia = 1;
-    zgloszenie1.opis_problemu = "Nie wlacza sie ekran.";
-    zgloszenie1.status = "Oczekuje";
-    zgloszenie1.klient = &klient1;
-    zgloszenie1.urzadzenie = &laptopKlienta1;
+    zgloszenie1.aktualizuj_status("Resolved");
 
-    serwis.przyjmij_zgloszenie(&zgloszenie1);
+    NarzedziaDiagnostyczne narzedzie1("Skaner", "Diagnostyczne", "v1.2");
+    narzedzie1.wykonaj_diagnostyke(&urzadzenie1);
 
-    PracownikSerwisu pracownik1;
-    pracownik1.imie = "Anna";
-    pracownik1.nazwisko = "Nowak";
-    pracownik1.specjalizacja = "Naprawa sprzetu komputerowego";
+    RaportSerwisowy raport1(&zgloszenie1, "Dane diagnostyczne", "Wymienić części");
+    raport1.utworz_raport();
+    raport1.aktualizuj_raport();
 
-    zgloszenie1.przypisz_pracownika(&pracownik1);
-    pracownik1.przyjmij_zgloszenie(zgloszenie1.numer_zgloszenia);
+    HistoriaSerwisowa historia1(&urzadzenie1);
+    historia1.dodaj_wpis(&zgloszenie1);
+    historia1.pobierz_historie();
 
-    cout << "Serwis: " << serwis.nazwa << ", Adres: " << serwis.adres << endl;
-    cout << "Klient: " << klient1.imie << " " << klient1.nazwisko << ", Email: " << klient1.email << endl;
-    cout << "Zgloszenie: " << zgloszenie1.numer_zgloszenia << ", Opis problemu: " << zgloszenie1.opis_problemu << ", Status: " << zgloszenie1.status << endl;
-    cout << "Pracownik przydzielony do zgloszenia: " << pracownik1.imie << " " << pracownik1.nazwisko << ", Specjalizacja: " << pracownik1.specjalizacja << endl;
+    SystemZarzadzania system1;
+    system1.przydziel_zgloszenie(&zgloszenie1);
+    system1.zaktualizuj_inwentarz();
 
+    CzescZamienna czesc1("Dysk SSD", "HP", "12345XYZ");
+    delete czesc1;
 
     return 0;
 }
